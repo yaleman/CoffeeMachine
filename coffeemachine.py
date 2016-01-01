@@ -78,11 +78,14 @@ class CoffeeMachine(object):
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
+        debug("Setting up pins")
         for pin in PIN_OUTPUTS:
-            debug("Initializing..")
             debug("Setting pin {} as output".format(pin))
             GPIO.setup(pin, GPIO.OUT)  # set the pins required as outputs
             setpin(pin, False) # set the pins to off for starters
+
+        for pin in PIN_INPUTS:
+            GPIO.setup(pin, GPIO.IN)            
 
         self.state = self.state_base
         # callbacks for buttons
