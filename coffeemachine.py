@@ -1,9 +1,8 @@
 #!/usr/bin/python
-
 """ Does the coffee machine magic thing! """
 
 # documentation for GPIO inputs: http://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
-
+# pretty pinout - http://pinout.xyz
 # Pi pin map (GPIO.BCM)
 # 5v | 5v | GN | 14 | 15 | 18 | GN | 23 | 24 | GN | 25 | 08 | 07
 # 3v | 2  |  3 |  4 | GN | 17 | 27 | 22 | 3v | 10 |  9 | 11 | GN
@@ -29,7 +28,7 @@ PIN_MAX_CS = 24
 PIN_MAX_CLOCK = 23
 PIN_MAX_DATA = 22
 # GPIO Groups
-PIN_OUTPUTS = (PIN_MAIN, PIN_HEATER, PIN_PUMP)
+PIN_OUTPUTS = {'main' : PIN_MAIN, 'heater' : PIN_HEATER, 'pump' : PIN_PUMP }
 PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 
 import sys, time
@@ -75,9 +74,9 @@ class CoffeeMachine(object):
 
         debug("Setting up pins")
         for pin in PIN_OUTPUTS:
-            debug("Setting pin {} as output".format(pin))
-            GPIO.setup(pin, GPIO.OUT)  # set the pins required as outputs
-            setpin(pin, False) # set the pins to off for starters
+            debug("Setting pin {} as output".format(PIN_OUTPUTS[pin]))
+            GPIO.setup(PIN_OUTPUTS[pin], GPIO.OUT)  # set the pins required as outputs
+            self.setpin(False,pin) # set the pins to off for starters
 
         for pin in PIN_INPUTS:
             debug("Setting pin {} as input".format(pin))
@@ -87,11 +86,6 @@ class CoffeeMachine(object):
         self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
             'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
-
-        # initial pin states
-        self.setpin(True, 'main', PIN_MAIN)
-        self.setpin(False, 'pump', PIN_PUMP)
-        self.setpin(False, 'heater', PIN_HEATER)
 
         self.state = self.state_base
         # callbacks for buttons
@@ -150,29 +144,29 @@ class CoffeeMachine(object):
         pass
 
     ######## SETTERS ########
-    def setpin(self, status, pin, pindef):
+    def setpin(self, status, pin):
         """ sets the local value and pin """
         debug("Setting pin #{} to {}".format(pin, status))
         self.status[pin] = status
         if(status == True):
-            GPIO.output(pindef, GPIO.HIGH)
+            GPIO.output(PIN_OUTPUTS[pin], GPIO.HIGH)
         else:
-            GPIO.output(pindef, GPIO.LOW)
+            GPIO.output(PIN_OUTPUTS[pin], GPIO.LOW)
         time.sleep(0.01)
 
     def set_base(self):
         """ pump off, main on """
-        self.setpin(True, 'main', PIN_MAIN)
-        self.setpin(False, 'pump', PIN_PUMP)
-        self.setpin(False, 'heater', PIN_HEATER)
+        self.setpin(True, 'main')
+        self.setpin(False, 'pump')
+        self.setpin(False, 'heater')
         self.status['timeout'] = False
         self.status['last_power_on'] = time.time()
 
     def set_alloff(self):
         """ everything is off, this is the "sleepy" state """
-        self.setpin(False, 'main', PIN_MAIN)
-        self.setpin(False, 'pump', PIN_PUMP)
-        self.setpin(False, 'heater', PIN_HEATER)
+        self.setpin(False, 'main')
+        self.setpin(False, 'pump')
+        self.setpin(False, 'heater')
         self.status['timeout'] = True
         self.status['last_power_on'] = 0
         self.state = self.state_alloff
