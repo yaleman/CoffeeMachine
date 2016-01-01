@@ -11,6 +11,11 @@
 # 5v | 5v | GN |  8 | 10 | 12 | GN | 16 | 18 | GN | 22 | 24 | 26
 # 3v | 3  |  5 |  7 | GN | 11 | 13 | 15 | 3v | 19 | 21 | 23 | GN
 
+# Wiring diagram for buttons
+# GPIO -> resistor -> 3.3v
+#      -> switch   -> GND
+# Switch grounds it, button gets activated.
+
 DEBUG = True
 USE_TEMP = False
 USE_HEATER = False
