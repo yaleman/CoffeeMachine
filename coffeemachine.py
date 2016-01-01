@@ -72,13 +72,6 @@ class CoffeeMachine(object):
 
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
-        #reset to base state, assume the machine should be on, pump off """
-        self.status = {'startup_time' : time.time(),\
-            'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
-            'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
-
-        self.setpin(True,'main',PIN_MAIN)
-        
 
         debug("Setting up pins")
         for pin in PIN_OUTPUTS:
@@ -89,6 +82,16 @@ class CoffeeMachine(object):
         for pin in PIN_INPUTS:
             debug("Setting pin {} as input".format(pin))
             GPIO.setup(pin, GPIO.IN)
+
+        #reset to base state, assume the machine should be on, pump off """
+        self.status = {'startup_time' : time.time(),\
+            'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
+            'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
+
+        # initial pin states
+        self.setpin(True, 'main', PIN_MAIN)
+        self.setpin(False, 'pump', PIN_PUMP)
+        self.setpin(False, 'heater', PIN_HEATER)
 
         self.state = self.state_base
         # callbacks for buttons
@@ -150,7 +153,7 @@ class CoffeeMachine(object):
         pass
 
     ######## MODE SETTERS ########
-    def setpin(self,status,pin,pindef):
+    def setpin(self, status, pin, pindef):
         """ sets the local value and pin """
         debug("Setting pin #{} to {}".format(pin, status))
         self.status[pin] = status
@@ -158,21 +161,21 @@ class CoffeeMachine(object):
             GPIO.output(pindef, GPIO.HIGH)
         else:
             GPIO.output(pindef, GPIO.LOW)
-        time.sleep(0.01) 
-    
+        time.sleep(0.01)
+
     def set_base(self):
         """ pump off, main on """
-        self.setpin(True,'main',PIN_MAIN)
-        self.setpin(False,'pump',PIN_PUMP)
-        self.setpin(False,'heater',PIN_HEATER)
+        self.setpin(True, 'main', PIN_MAIN)
+        self.setpin(False, 'pump', PIN_PUMP)
+        self.setpin(False, 'heater', PIN_HEATER)
         self.status['timeout'] = False
         self.status['last_power_on'] = time.time()
 
     def set_alloff(self):
         """ everything is off, this is the "sleepy" state """
-        self.setpin(False,'main',PIN_MAIN)
-        self.setpin(False,'pump',PIN_PUMP)
-        self.setpin(False,'heater',PIN_HEATER)
+        self.setpin(False, 'main', PIN_MAIN)
+        self.setpin(False, 'pump', PIN_PUMP)
+        self.setpin(False, 'heater', PIN_HEATER)
         self.status['timeout'] = True
         self.status['last_power_on'] = 0
         self.state = self.state_alloff
