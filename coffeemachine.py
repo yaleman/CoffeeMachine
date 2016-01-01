@@ -83,7 +83,7 @@ class CoffeeMachine(object):
             GPIO.setup(pin, GPIO.IN)
         # callbacks for buttons
         GPIO.add_event_detect(PIN_MAIN_BUTTON, GPIO.RISING, callback=self.callback_powerbutton)
-        if(USE_PUMP==True):
+        if(USE_PUMP == True):
             GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton)
 
         if(USE_TEMP):
