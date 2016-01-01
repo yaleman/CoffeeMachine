@@ -46,6 +46,14 @@ except ImportError:
     print("Failed to import RPi GPIO libraries, quitting.")
     sys.exit()
 
+def setpin(pin, test):
+    """ sets a pin based on a boolean test """
+    if(test == True):
+        GPIO.output(pin, GPIO.HIGH)
+    else:
+        GPIO.output(pin, GPIO.LOW)
+        time.sleep(0.01)
+
 
 ############## CoffeeMachine Class Start ##############
 
@@ -65,8 +73,9 @@ class CoffeeMachine(object):
         GPIO.setmode(GPIO.BOARD)
 
         for pin in PIN_OUTPUTS:
+            print "Setting pin {} as output".format(pin)
             GPIO.setup(pin, GPIO.OUT)  # set the pins required as outputs
-            self.setpin(pin, False) # set the pins to off for starters
+            setpin(pin, False) # set the pins to off for starters
         self.state = self.state_base
         #TODO: use this
         callback_comment_todo = """
@@ -131,7 +140,7 @@ is only one thread used for callbacks, in which every callback is run, in the or
 
     @staticmethod
     def state_alloff():
-        """ doesn't do anything """
+        """ doesn't need to anything """
         pass
 
     def set_alloff(self):
@@ -140,14 +149,6 @@ is only one thread used for callbacks, in which every callback is run, in the or
         self.status['pump'] = False
         self.status['heater'] = False
         self.state = self.state_alloff
-
-    def setpin(self, pin, test):
-        """ sets a pin based on a boolean test """
-        if(test == True):
-            GPIO.output(pin, GPIO.HIGH)
-        else:
-            GPIO.output(pin, GPIO.LOW)
-            time.sleep(0.01)
 
     def _checktemp(self, forced=False):
         """ checks the temp, but only if it's forced or it's been long enough """
@@ -180,14 +181,17 @@ is only one thread used for callbacks, in which every callback is run, in the or
             # pump off or state off
                 # both on
 
-        print("Time since last tick: {}".format(time_since_last_tick))
+        # handle the possibility that the system is overloaded and just die
+        if(time_since_last_tick > 0.5):
+            sys.exit("Program running too slow, scary things might happen")
+
         # check to see if the machine's been on too long
         if (self.current_time - self.status['last_power_on'] > MAX_TIME_ON):
             self.set_alloff()
 
-        self.setpin(PIN_MAIN, self.status['main'])
-        self.setpin(PIN_PUMP, self.status['pump'])
-        self.setpin(PIN_HEATER, self.status['heater'])
+        setpin(PIN_MAIN, self.status['main'])
+        setpin(PIN_PUMP, self.status['pump'])
+        setpin(PIN_HEATER, self.status['heater'])
         # finally update the last tick time
         self.status['last_tick'] = self.current_time
 
