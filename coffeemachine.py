@@ -13,6 +13,8 @@
 
 DEBUG = True
 USE_TEMP = False
+USE_HEATER = False
+USE_PUMP = False
 TEMP_SETPOINT = 92.0
 TEMP_INTERVAL = 0.5
 TEMP_UNITS = 'c'
@@ -81,7 +83,8 @@ class CoffeeMachine(object):
             GPIO.setup(pin, GPIO.IN)
         # callbacks for buttons
         GPIO.add_event_detect(PIN_MAIN_BUTTON, GPIO.RISING, callback=self.callback_powerbutton)
-        GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton)
+        if(USE_PUMP==True):
+            GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton)
 
         if(USE_TEMP):
             # connect to the thermocouple
@@ -214,6 +217,7 @@ class CoffeeMachine(object):
         debug("M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater']))
         if(USE_TEMP == True):
             debug("{}".format('+'*self.temp/2+'|'))
+            # I wanna use sparkcharts - https://github.com/1stvamp/py-sparkblocks.git
 
         # finally update the last tick time
         self.status['last_tick'] = self.current_time
