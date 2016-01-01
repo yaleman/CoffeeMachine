@@ -216,9 +216,9 @@ class CoffeeMachine(object):
                 debug("Timeout, shutdown!")
                 self.set_alloff()
                 self.status['timeout'] = True
-        debug("M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater']))
-        if(USE_TEMP == True):
-            debug("{}".format('+'*self.temp/2+'|'))
+        #debug("M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater']))
+        #if(USE_TEMP == True):
+        #    debug("{}".format('+'*self.temp/2+'|'))
             # I wanna use sparkcharts - https://github.com/1stvamp/py-sparkblocks.git
 
         # finally update the last tick time
