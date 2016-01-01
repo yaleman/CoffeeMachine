@@ -168,13 +168,13 @@ is only one thread used for callbacks, in which every callback is run, in the or
         self.state()
 
         # check if the user's asking me to reset
-        if(GPIO.input(PIN_MAIN_BUTTON)):
+        #if(GPIO.input(PIN_MAIN_BUTTON)):
             # if the state's already on, turn everything off
             # else, reset the giblets to default
-            pass
+        #    pass
         # check if the pump should be on
-        elif(GPIO.input(PIN_PUMP_BUTTON)):
-            pass
+        #elif(GPIO.input(PIN_PUMP_BUTTON)):
+        #    pass
             # pump on state on
                 # pump off
             # pump off or state off
