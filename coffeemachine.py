@@ -18,12 +18,12 @@ TEMP_INTERVAL = 0.5
 TEMP_UNITS = 'c'
 MAX_TIME_ON = 3600
 #GPIO outputs
-PIN_MAIN = 3
-PIN_HEATER = 5
-PIN_PUMP = 7
+PIN_MAIN = 11
+PIN_HEATER = 13
+PIN_PUMP = 15
 # GPIO inputs
-PIN_MAIN_BUTTON = 8
-PIN_PUMP_BUTTON = 10
+PIN_MAIN_BUTTON = 16
+PIN_PUMP_BUTTON = 18
 # MAX31855 pins
 PIN_MAX_CS = 24
 PIN_MAX_CLOCK = 23
@@ -33,8 +33,8 @@ PIN_OUTPUTS = (PIN_MAIN, PIN_HEATER, PIN_PUMP)
 PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 
 import sys, time
-#https://github.com/Tuckie/max31855
 try:
+    #https://github.com/Tuckie/max31855
     from max31855.max31855 import MAX31855
     # requires RPi.GPIO
 except ImportError:
@@ -48,13 +48,13 @@ except ImportError:
     sys.exit()
 
 def debug(text):
+    """ output a thing """
     if(DEBUG):
         print(text)
 
 def setpin(pin, test):
     """ sets a pin based on a boolean test """
-    debug("Setting pin #{} to {}".format(pin,test))
-        
+    debug("Setting pin #{} to {}".format(pin, test))
     if(test == True):
         GPIO.output(pin, GPIO.HIGH)
     else:
@@ -71,12 +71,11 @@ class CoffeeMachine(object):
         self.current_time = time.time()
 
         #reset to base state, assume the machine should be on, pump off """
-        self.status = {'main' : True,\
+        self.status = {'main' : True, 'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : time.time(), 'last_tick' : time.time(),\
-            'startup_time' : time.time(),\
-             'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
+            'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
 
-       # set the pin numbering to what's on the board and configure outputs
+        # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
         for pin in PIN_OUTPUTS:
