@@ -106,6 +106,7 @@ class CoffeeMachine(object):
     def callback_powerbutton(self, channel):
         """ handles pressing the main power button PIN_MAIN_BUTTON """
         debug("Button: POWER")
+        debug("Channel: {}".format(channel))
         # if the power's already on, turn off
         if(self.status['main'] == True):
             self.set_alloff()
@@ -116,11 +117,12 @@ class CoffeeMachine(object):
     def callback_pumpbutton(self, channel):
         """ handles pressing the pump button PIN_PUMP_BUTTON """
         debug("Button: PUMP")
+        debug("Channel: {}".format(channel))
         # if main is off, ignore pump button
-        if(self.state['main'] == False):
+        if(self.status['main'] == False):
             pass
         # if pump is on and main is on, turn the pump off
-        elif(self.state['pump'] == True):
+        elif(self.status['pump'] == True):
             self.status['pump'] = True
         # if pump is off and main is on, turn the pump on
         else:
@@ -203,7 +205,7 @@ class CoffeeMachine(object):
         self.current_time = time.time()
         time_since_last_tick = self.current_time - self.status['last_tick']
         # do what the state does
-        #debug("State: {}".format(self.state.__doc__))
+        # debug("State: {}".format(self.state.__doc__))
         self.state()
 
         # handle the possibility that the system is overloaded and just die
