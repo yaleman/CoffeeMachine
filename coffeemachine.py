@@ -33,6 +33,7 @@ PIN_OUTPUTS = {'main' : PIN_MAIN, 'heater' : PIN_HEATER, 'pump' : PIN_PUMP}
 PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 
 import sys, time
+from collections import deque
 try:
     #https://github.com/Tuckie/max31855
     from max31855.max31855 import MAX31855
@@ -64,7 +65,7 @@ class CoffeeMachine(object):
         self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
             'temp_lastcheck' : time.time()}
-
+        self.temphistory = deque([])
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
@@ -187,7 +188,9 @@ class CoffeeMachine(object):
                 self.status['temp_lastcheck'] = current_time
                 self.temp = self.thermocouple.get()
                 print("Temperature is: {}".format(self.temp))
-
+                self.temphistory.append(self.temp)
+                if(len(self.temphistory) > 100):
+                    self.temphistory.popleft()
 
     def tick(self):
         """ handle an instance in time """
@@ -208,10 +211,8 @@ class CoffeeMachine(object):
                 debug("Timeout, shutdown!")
                 self.set_alloff()
                 self.status['timeout'] = True
-
-        #setpin(PIN_MAIN, self.status['main'])
-        #setpin(PIN_PUMP, self.status['pump'])
-        #setpin(PIN_HEATER, self.status['heater'])
+        flagstatus = "M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater'])
+        debug("{} {}".format(flagstatus, '+'*self.temp/2+'|'))
         # finally update the last tick time
         self.status['last_tick'] = self.current_time
 
