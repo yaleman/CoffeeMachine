@@ -83,9 +83,9 @@ class CoffeeMachine(object):
             debug("Setting pin {} as input".format(pin))
             GPIO.setup(pin, GPIO.IN)
         # callbacks for buttons, pin, rising/falling, callback, bouncetime
-        GPIO.add_event_detect(PIN_MAIN_BUTTON, GPIO.RISING, callback=self.callback_powerbutton, bouncetime=200)
-        if(USE_PUMP == True):
-            GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton, bouncetime=200)
+        GPIO.add_event_detect(PIN_MAIN_BUTTON, callback=self.callback_powerbutton, bouncetime=200)
+        #if(USE_PUMP == True):
+        GPIO.add_event_detect(PIN_PUMP_BUTTON, callback=self.callback_pumpbutton, bouncetime=200)
 
         if(USE_TEMP):
             # connect to the thermocouple
