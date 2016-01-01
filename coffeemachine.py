@@ -12,6 +12,7 @@
 # 5v | 5v | GN |  8 | 10 | 12 | GN | 16 | 18 | GN | 22 | 24 | 26
 # 3v | 3  |  5 |  7 | GN | 11 | 13 | 15 | 3v | 19 | 21 | 23 | GN
 
+DEBUG = True
 USE_TEMP = False
 TEMP_INTERVAL = 0.5
 TEMP_UNITS = 'c'
@@ -46,8 +47,14 @@ except ImportError:
     print("Failed to import RPi GPIO libraries, quitting.")
     sys.exit()
 
+def debug(text):
+    if(DEBUG):
+        print(text)
+
 def setpin(pin, test):
     """ sets a pin based on a boolean test """
+    debug("Setting pin #{} to {}".format(pin,test))
+        
     if(test == True):
         GPIO.output(pin, GPIO.HIGH)
     else:
@@ -73,7 +80,7 @@ class CoffeeMachine(object):
         GPIO.setmode(GPIO.BOARD)
 
         for pin in PIN_OUTPUTS:
-            print "Setting pin {} as output".format(pin)
+            debug("Setting pin {} as output".format(pin))
             GPIO.setup(pin, GPIO.OUT)  # set the pins required as outputs
             setpin(pin, False) # set the pins to off for starters
         self.state = self.state_base
