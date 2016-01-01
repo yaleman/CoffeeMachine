@@ -34,7 +34,7 @@ PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 import sys, time
 #https://github.com/Tuckie/max31855
 try:
-    from max31855 import MAX31855#, MAX31855Error
+    from max31855.max31855 import MAX31855
     # requires RPi.GPIO
 except ImportError:
     USE_TEMP = False
