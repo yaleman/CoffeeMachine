@@ -13,6 +13,7 @@
 
 DEBUG = True
 USE_TEMP = False
+TEMP_WANTED = 92.0
 TEMP_INTERVAL = 0.5
 TEMP_UNITS = 'c'
 MAX_TIME_ON = 3600
@@ -175,7 +176,15 @@ class CoffeeMachine(object):
     ############ UTILS ################
     def handle_heater(self):
         """ deals with the heater - should it be on, what's the temp etc? """
-        pass
+        # double check heater should be on
+        self.checktemp()
+        if(self.status['main'] == True ):
+            if(self.temp>=TEMP_WANTED):
+                self.setpin(False,'heater')
+            else:
+                self.setpin(True,'heater')
+        else:
+            self.setpin(False,'heater')
 
     def checktemp(self, forced=False):
         """ checks the temp, but only if it's forced or it's been long enough """
