@@ -65,33 +65,33 @@ class CoffeeMachine(object):
         self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
             'temp_lastcheck' : time.time(), 'temp' : 0}
+        # keep a history of temperatures, for graphing and PID
         self.temphistory = deque([])
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
-
+        # configure the pins to be outputs
         debug("Setting up pins")
         for pin in PIN_OUTPUTS:
             debug("Setting pin {} as output".format(PIN_OUTPUTS[pin]))
             GPIO.setup(PIN_OUTPUTS[pin], GPIO.OUT)  # set the pins required as outputs
             self.setpin(False, pin) # set the pins to off for starters
-
+        # configure the input pins
         for pin in PIN_INPUTS:
             debug("Setting pin {} as input".format(pin))
             GPIO.setup(pin, GPIO.IN)
-
-
-        self.state = self.state_base
         # callbacks for buttons
         GPIO.add_event_detect(PIN_MAIN_BUTTON, GPIO.RISING, callback=self.callback_powerbutton)
         GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton)
 
-        # force initial temp check
-        self.checktemp(True)
-
         if(USE_TEMP):
+            # connect to the thermocouple
             self.thermocouple = MAX31855(PIN_MAX_CS, PIN_MAX_CLOCK, PIN_MAX_DATA, TEMP_UNITS)
+            # force initial temp check
+            self.checktemp(True)
         else:
             self.thermocouple = False
+        # state machines are go!
+        self.state = self.state_base
 
     def __del__(self):
         """ shutdown cleanup steps """
@@ -198,7 +198,7 @@ class CoffeeMachine(object):
         self.current_time = time.time()
         time_since_last_tick = self.current_time - self.status['last_tick']
         # do what the state does
-        print("State: {}".format(self.state.__doc__))
+        debug("State: {}".format(self.state.__doc__))
         self.state()
 
         # handle the possibility that the system is overloaded and just die
@@ -211,8 +211,10 @@ class CoffeeMachine(object):
                 debug("Timeout, shutdown!")
                 self.set_alloff()
                 self.status['timeout'] = True
-        flagstatus = "M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater'])
-        debug("{} {}".format(flagstatus, '+'*self.temp/2+'|'))
+        debug("M: {} P: {} H: {}".format(self.status['main'], self.status['pump'], self.status['heater']))
+        if(USE_TEMP == True):
+            debug("{}".format('+'*self.temp/2+'|'))
+
         # finally update the last tick time
         self.status['last_tick'] = self.current_time
 
