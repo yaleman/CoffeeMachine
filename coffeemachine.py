@@ -203,7 +203,7 @@ class CoffeeMachine(object):
         self.current_time = time.time()
         time_since_last_tick = self.current_time - self.status['last_tick']
         # do what the state does
-        debug("State: {}".format(self.state.__doc__))
+        #debug("State: {}".format(self.state.__doc__))
         self.state()
 
         # handle the possibility that the system is overloaded and just die
