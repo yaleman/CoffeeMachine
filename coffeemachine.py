@@ -69,6 +69,11 @@ class CoffeeMachine(object):
         """ startup """
         self.current_time = time.time()
 
+        #reset to base state, assume the machine should be on, pump off """
+        self.status = {'startup_time' : time.time(),\
+            'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
+            'temp_lastcheck' : time.time()}
+
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
@@ -82,10 +87,6 @@ class CoffeeMachine(object):
             debug("Setting pin {} as input".format(pin))
             GPIO.setup(pin, GPIO.IN)
 
-        #reset to base state, assume the machine should be on, pump off """
-        self.status = {'startup_time' : time.time(),\
-            'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
-            'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
 
         self.state = self.state_base
         # callbacks for buttons
