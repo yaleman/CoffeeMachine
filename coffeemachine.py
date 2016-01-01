@@ -85,7 +85,8 @@ class CoffeeMachine(object):
             setpin(pin, False) # set the pins to off for starters
 
         for pin in PIN_INPUTS:
-            GPIO.setup(pin, GPIO.IN)            
+            debug("Setting pin {} as input".format(pin))
+            GPIO.setup(pin, GPIO.IN)
 
         self.state = self.state_base
         # callbacks for buttons
@@ -151,12 +152,16 @@ class CoffeeMachine(object):
         """ pump off, main on """
         self.status['main'] = True
         self.status['pump'] = False
+        self.status['timeout'] = False
+        self.status['last_power_on'] = time.time()
 
     def set_alloff(self):
         """ everything is off, this is the "sleepy" state """
         self.status['main'] = False
         self.status['pump'] = False
         self.status['heater'] = False
+        self.status['timeout'] = True
+        self.status['last_power_on'] = 0
         self.state = self.state_alloff
 
     def checktemp(self, forced=False):
@@ -179,27 +184,16 @@ class CoffeeMachine(object):
         print("State: {}".format(self.state.__doc__))
         self.state()
 
-        # check if the user's asking me to reset
-        #if(GPIO.input(PIN_MAIN_BUTTON)):
-            # if the state's already on, turn everything off
-            # else, reset the giblets to default
-        #    pass
-        # check if the pump should be on
-        #elif(GPIO.input(PIN_PUMP_BUTTON)):
-        #    pass
-            # pump on state on
-                # pump off
-            # pump off or state off
-                # both on
-
         # handle the possibility that the system is overloaded and just die
         if(time_since_last_tick > 0.5):
             sys.exit("Program running too slow, scary things might happen")
 
-        # check to see if the machine's been on too long
-        if (self.current_time - self.status['last_power_on'] > MAX_TIME_ON):
-            debug("Timeout, shutdown!")
-            self.set_alloff()
+        if(self.status['timeout'] == False):
+            # check to see if the machine's been on too long
+            if (self.current_time - self.status['last_power_on'] > MAX_TIME_ON):
+                debug("Timeout, shutdown!")
+                self.set_alloff()
+                self.status['timeout'] = True
 
         setpin(PIN_MAIN, self.status['main'])
         setpin(PIN_PUMP, self.status['pump'])
