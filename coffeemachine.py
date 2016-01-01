@@ -72,45 +72,25 @@ class CoffeeMachine(object):
 
         #reset to base state, assume the machine should be on, pump off """
         self.status = {'main' : True, 'startup_time' : time.time(),\
-            'timeout' : False, 'last_power_on' : time.time(), 'last_tick' : time.time(),\
+            'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
             'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
 
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
         for pin in PIN_OUTPUTS:
+            debug("Initializing..")
             debug("Setting pin {} as output".format(pin))
             GPIO.setup(pin, GPIO.OUT)  # set the pins required as outputs
             setpin(pin, False) # set the pins to off for starters
+
         self.state = self.state_base
-        #TODO: use this
-        callback_comment_todo = """
-        Threaded callbacks
-RPi.GPIO runs a second thread for callback functions. This means that callback functions can be run at the 
-same time as your main program, in immediate response to an edge. For example:
-def my_callback(channel):
-    print('This is a edge event callback function!')
-    print('Edge detected on channel %s'%channel)
-    print('This is run in a different thread to your main program')
+        # callbacks for buttons
+        GPIO.add_event_detect(PIN_MAIN_BUTTON, GPIO.RISING, callback=self.callback_powerbutton)
+        GPIO.add_event_detect(PIN_PUMP_BUTTON, GPIO.RISING, callback=self.callback_pumpbutton)
 
-GPIO.add_event_detect(channel, GPIO.RISING, callback=my_callback)  # add rising edge detection on a channel
-...the rest of your program...
-If you wanted more than one callback function:
-def my_callback_one(channel):
-    print('Callback one')
-
-def my_callback_two(channel):
-    print('Callback two')
-
-GPIO.add_event_detect(channel, GPIO.RISING)
-GPIO.add_event_callback(channel, my_callback_one)
-GPIO.add_event_callback(channel, my_callback_two)
-Note that in this case, the callback functions are run sequentially, not concurrently. This is because there 
-is only one thread used for callbacks, in which every callback is run, in the order in which they have been defined.
-"""
-        del(callback_comment_todo)
         # force initial temp check
-        self._checktemp(True)
+        self.checktemp(True)
 
         if(USE_TEMP):
             self.thermocouple = MAX31855(PIN_MAX_CS, PIN_MAX_CLOCK, PIN_MAX_DATA, TEMP_UNITS)
@@ -129,15 +109,29 @@ is only one thread used for callbacks, in which every callback is run, in the or
 
     def callback_powerbutton(self):
         """ handles pressing the main power button PIN_MAIN_BUTTON """
-        pass
+        # if the power's already on, turn off
+        if(self.status['main'] == True):
+            self.set_alloff()
+        # if the power's off, then turn on to a base state
+        else:
+            self.set_base()
 
     def callback_pumpbutton(self):
         """ handles pressing the pump button PIN_PUMP_BUTTON """
+        # if main is off, ignore pump button
+        if(self.state['main'] == False):
+            pass
+        # if pump is on and main is on, turn the pump off
+        elif(self.state['pump'] == True):
+            self.status['pump'] = True
+        # if pump is off and main is on, turn the pump on
+        else:
+            self.status['pump'] = False
 
-
-
+    ######## STATE DEFINITIONS ########
     def state_base(self):
-        """ base state, main power is on, assume heater should be on, pump off """
+        """ base state """
+        # main power is on, assume heater should be on, pump off
         self.handle_heater()
 
     def state_pumpon(self):
@@ -146,8 +140,14 @@ is only one thread used for callbacks, in which every callback is run, in the or
 
     @staticmethod
     def state_alloff():
-        """ doesn't need to anything """
+        """ all off """
         pass
+
+    ######## MODE SETTERS ########
+    def set_base(self):
+        """ pump off, main on """
+        self.status['main'] = True
+        self.status['pump'] = False
 
     def set_alloff(self):
         """ everything is off, this is the "sleepy" state """
@@ -156,7 +156,7 @@ is only one thread used for callbacks, in which every callback is run, in the or
         self.status['heater'] = False
         self.state = self.state_alloff
 
-    def _checktemp(self, forced=False):
+    def checktemp(self, forced=False):
         """ checks the temp, but only if it's forced or it's been long enough """
         if(USE_TEMP):
             current_time = time.time()
@@ -172,6 +172,8 @@ is only one thread used for callbacks, in which every callback is run, in the or
         # update the timers
         self.current_time = time.time()
         time_since_last_tick = self.current_time - self.status['last_tick']
+        # do what the state does
+        print("State: {}".format(self.state.__doc__))
         self.state()
 
         # check if the user's asking me to reset
@@ -193,6 +195,7 @@ is only one thread used for callbacks, in which every callback is run, in the or
 
         # check to see if the machine's been on too long
         if (self.current_time - self.status['last_power_on'] > MAX_TIME_ON):
+            debug("Timeout, shutdown!")
             self.set_alloff()
 
         setpin(PIN_MAIN, self.status['main'])
