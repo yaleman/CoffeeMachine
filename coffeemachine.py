@@ -13,7 +13,7 @@
 
 DEBUG = True
 USE_TEMP = False
-TEMP_WANTED = 92.0
+TEMP_SETPOINT = 92.0
 TEMP_INTERVAL = 0.5
 TEMP_UNITS = 'c'
 MAX_TIME_ON = 3600
@@ -168,8 +168,10 @@ class CoffeeMachine(object):
         """ deals with the heater - should it be on, what's the temp etc? """
         # double check heater should be on
         self.checktemp()
+        tempdiff = TEMP_SETPOINT - self.temp
+
         if(self.status['main'] == True):
-            if(self.temp >= TEMP_WANTED):
+            if(tempdiff < 0):
                 self.setpin(False, 'heater')
             else:
                 self.setpin(True, 'heater')
