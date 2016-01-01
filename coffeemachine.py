@@ -64,7 +64,7 @@ class CoffeeMachine(object):
         #reset to base state, assume the machine should be on, pump off """
         self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
-            'temp_lastcheck' : time.time()}
+            'temp_lastcheck' : time.time(), 'temp' : 0}
         self.temphistory = deque([])
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
