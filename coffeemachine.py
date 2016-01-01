@@ -29,7 +29,7 @@ PIN_MAX_CLOCK = 23
 PIN_MAX_DATA = 22
 # GPIO Groups
 PIN_OUTPUTS = (PIN_MAIN, PIN_HEATER, PIN_PUMP)
-PIN_INPUTS = (PIN_MAIN_BUTTON,PIN_PUMP_BUTTON)
+PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 
 import sys, time
 #https://github.com/Tuckie/max31855
@@ -61,7 +61,7 @@ class CoffeeMachine(object):
             'startup_time' : time.time(),\
              'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
 
-       """ set the pin numbering to what's on the board and configure outputs """
+       # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
         for pin in PIN_OUTPUTS:
@@ -115,7 +115,7 @@ is only one thread used for callbacks, in which every callback is run, in the or
     def callback_powerbutton(self):
         """ handles pressing the main power button PIN_MAIN_BUTTON """
         pass
-        
+
     def callback_pumpbutton(self):
         """ handles pressing the pump button PIN_PUMP_BUTTON """
 
@@ -166,9 +166,7 @@ is only one thread used for callbacks, in which every callback is run, in the or
         self.current_time = time.time()
         time_since_last_tick = self.current_time - self.status['last_tick']
         self.state()
-        
 
-        
         # check if the user's asking me to reset
         if(GPIO.input(PIN_MAIN_BUTTON)):
             # if the state's already on, turn everything off
