@@ -16,7 +16,7 @@ USE_TEMP = False
 USE_HEATER = False
 USE_PUMP = False
 TEMP_SETPOINT = 92.0
-TEMP_INTERVAL = 0.5
+TEMP_INTERVAL = 0.0
 TEMP_UNITS = 'c'
 MAX_TIME_ON = 3600
 #GPIO outputs
@@ -66,8 +66,9 @@ class CoffeeMachine(object):
         #reset to base state, assume the machine should be on, pump off """
         self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
-            'temp_lastcheck' : time.time(), 'temp' : 0}
+            'temp_lastcheck' : time.time()}
         # keep a history of temperatures, for graphing and PID
+        self.temp = 0
         self.temphistory = deque([])
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
