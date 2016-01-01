@@ -29,7 +29,7 @@ PIN_MAX_CS = 24
 PIN_MAX_CLOCK = 23
 PIN_MAX_DATA = 22
 # GPIO Groups
-PIN_OUTPUTS = {'main' : PIN_MAIN, 'heater' : PIN_HEATER, 'pump' : PIN_PUMP }
+PIN_OUTPUTS = {'main' : PIN_MAIN, 'heater' : PIN_HEATER, 'pump' : PIN_PUMP}
 PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
 
 import sys, time
@@ -52,16 +52,6 @@ def debug(text):
     if(DEBUG):
         print(text)
 
-def setpin(pin, test):
-    """ sets a pin based on a boolean test """
-    debug("Setting pin #{} to {}".format(pin, test))
-    if(test == True):
-        GPIO.output(pin, GPIO.HIGH)
-    else:
-        GPIO.output(pin, GPIO.LOW)
-        time.sleep(0.01)
-
-
 ############## CoffeeMachine Class Start ##############
 
 class CoffeeMachine(object):
@@ -82,7 +72,7 @@ class CoffeeMachine(object):
         for pin in PIN_OUTPUTS:
             debug("Setting pin {} as output".format(PIN_OUTPUTS[pin]))
             GPIO.setup(PIN_OUTPUTS[pin], GPIO.OUT)  # set the pins required as outputs
-            self.setpin(False,pin) # set the pins to off for starters
+            self.setpin(False, pin) # set the pins to off for starters
 
         for pin in PIN_INPUTS:
             debug("Setting pin {} as input".format(pin))
@@ -178,13 +168,13 @@ class CoffeeMachine(object):
         """ deals with the heater - should it be on, what's the temp etc? """
         # double check heater should be on
         self.checktemp()
-        if(self.status['main'] == True ):
-            if(self.temp>=TEMP_WANTED):
-                self.setpin(False,'heater')
+        if(self.status['main'] == True):
+            if(self.temp >= TEMP_WANTED):
+                self.setpin(False, 'heater')
             else:
-                self.setpin(True,'heater')
+                self.setpin(True, 'heater')
         else:
-            self.setpin(False,'heater')
+            self.setpin(False, 'heater')
 
     def checktemp(self, forced=False):
         """ checks the temp, but only if it's forced or it's been long enough """
