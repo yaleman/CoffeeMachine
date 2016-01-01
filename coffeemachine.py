@@ -71,10 +71,11 @@ class CoffeeMachine(object):
         self.current_time = time.time()
 
         #reset to base state, assume the machine should be on, pump off """
-        self.status = {'main' : True, 'startup_time' : time.time(),\
+        self.status = {'startup_time' : time.time(),\
             'timeout' : False, 'last_power_on' : 0, 'last_tick' : time.time(),\
             'pump' : False, 'heater' : False, 'temp_lastcheck' : time.time()}
 
+        self.setpin(True,'main',PIN_MAIN)
         # set the pin numbering to what's on the board and configure outputs
         GPIO.setmode(GPIO.BOARD)
 
@@ -148,18 +149,29 @@ class CoffeeMachine(object):
         pass
 
     ######## MODE SETTERS ########
+    def setpin(self,status,pin,pindef):
+        """ sets the local value and pin """
+        debug("Setting pin #{} to {}".format(pin, status))
+        self.status[pin] = status
+        if(status == True):
+            GPIO.output(pindef, GPIO.HIGH)
+        else:
+            GPIO.output(pindef, GPIO.LOW)
+        time.sleep(0.01) 
+    
     def set_base(self):
         """ pump off, main on """
-        self.status['main'] = True
-        self.status['pump'] = False
+        self.setpin(True,'main',PIN_MAIN)
+        self.setpin(False,'pump',PIN_PUMP)
+        self.setpin(False,'heater',PIN_HEATER)
         self.status['timeout'] = False
         self.status['last_power_on'] = time.time()
 
     def set_alloff(self):
         """ everything is off, this is the "sleepy" state """
-        self.status['main'] = False
-        self.status['pump'] = False
-        self.status['heater'] = False
+        self.setpin(False,'main',PIN_MAIN)
+        self.setpin(False,'pump',PIN_PUMP)
+        self.setpin(False,'heater',PIN_HEATER)
         self.status['timeout'] = True
         self.status['last_power_on'] = 0
         self.state = self.state_alloff
