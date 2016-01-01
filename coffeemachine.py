@@ -112,10 +112,7 @@ class CoffeeMachine(object):
             self.thermocouple.cleanup()
         GPIO.cleanup()
 
-    def handle_heater(self):
-        """ deals with the heater - should it be on, what's the temp etc? """
-        pass
-
+    ######## BUTTON CALLBACKS ########
     def callback_powerbutton(self):
         """ handles pressing the main power button PIN_MAIN_BUTTON """
         # if the power's already on, turn off
@@ -152,7 +149,7 @@ class CoffeeMachine(object):
         """ all off """
         pass
 
-    ######## MODE SETTERS ########
+    ######## SETTERS ########
     def setpin(self, status, pin, pindef):
         """ sets the local value and pin """
         debug("Setting pin #{} to {}".format(pin, status))
@@ -179,6 +176,11 @@ class CoffeeMachine(object):
         self.status['timeout'] = True
         self.status['last_power_on'] = 0
         self.state = self.state_alloff
+
+    ############ UTILS ################
+    def handle_heater(self):
+        """ deals with the heater - should it be on, what's the temp etc? """
+        pass
 
     def checktemp(self, forced=False):
         """ checks the temp, but only if it's forced or it's been long enough """
@@ -211,9 +213,9 @@ class CoffeeMachine(object):
                 self.set_alloff()
                 self.status['timeout'] = True
 
-        setpin(PIN_MAIN, self.status['main'])
-        setpin(PIN_PUMP, self.status['pump'])
-        setpin(PIN_HEATER, self.status['heater'])
+        #setpin(PIN_MAIN, self.status['main'])
+        #setpin(PIN_PUMP, self.status['pump'])
+        #setpin(PIN_HEATER, self.status['heater'])
         # finally update the last tick time
         self.status['last_tick'] = self.current_time
 
