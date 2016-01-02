@@ -1,21 +1,6 @@
 #!/usr/bin/python
 """ Does the coffee machine magic thing! """
 
-# documentation for GPIO inputs: http://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
-# pretty pinout - http://pinout.xyz
-# Pi pin map (GPIO.BCM)
-# 5v | 5v | GN | 14 | 15 | 18 | GN | 23 | 24 | GN | 25 | 08 | 07
-# 3v | 2  |  3 |  4 | GN | 17 | 27 | 22 | 3v | 10 |  9 | 11 | GN
-
-# GPIO.BOARD
-# 5v | 5v | GN |  8 | 10 | 12 | GN | 16 | 18 | GN | 22 | 24 | 26
-# 3v | 3  |  5 |  7 | GN | 11 | 13 | 15 | 3v | 19 | 21 | 23 | GN
-
-# Wiring diagram for buttons
-# GPIO -> resistor -> 3.3v
-#      -> switch   -> GND
-# Switch grounds it, button gets activated.
-
 # USER SETTINGS
 MAX_TIME_ON = 3600
 
@@ -68,7 +53,6 @@ def debug(text):
         print(text)
 
 ############## CoffeeMachine Class Start ##############
-
 class CoffeeMachine(object):
     """ magical coffee state machine """
     def __init__(self):
@@ -246,10 +230,10 @@ def main():
         machine = CoffeeMachine()
         while(True): # do a barrel roll!
             machine.tick()
-    except KeyboardInterrupt, SystemExit:
+    except (KeyboardInterrupt, SystemExit) as exception_error:
         # make sure the GPIO cleanup and other processes are done right
-        machine.shutdown()        
-        sys.exit("Quitting cleanly")
+        machine.shutdown()
+        sys.exit("Quitting cleanly, error: {}".format(exception_error))
 
 if __name__ == '__main__':
     main()
