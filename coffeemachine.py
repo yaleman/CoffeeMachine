@@ -101,7 +101,7 @@ class CoffeeMachine(object):
         # state machines are go!
         self.state = self.state_base
 
-    def __del__(self):
+    def shutdown(self):
         """ shutdown cleanup steps """
         if(USE_TEMP):
             self.thermocouple.cleanup()
@@ -241,7 +241,7 @@ def main():
             machine.tick()
     except KeyboardInterrupt, SystemExit:
         # make sure the GPIO cleanup and other processes are done right
-        del(machine)
+        machine.shutdown()        
         sys.exit("Quitting cleanly")
 
 if __name__ == '__main__':
