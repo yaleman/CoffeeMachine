@@ -16,15 +16,19 @@
 #      -> switch   -> GND
 # Switch grounds it, button gets activated.
 
+# USER SETTINGS
+MAX_TIME_ON = 3600
+
+TEMP_UNITS = 'c'
+TEMP_SETPOINT = 92.0
+
+### HARDWARE SETTINGS ###
 DEBUG = True
 USE_TEMP = False
 USE_HEATER = False
 USE_PUMP = False
-TEMP_SETPOINT = 92.0
-TEMP_INTERVAL = 0.0
-TEMP_UNITS = 'c'
-MAX_TIME_ON = 3600
-#GPIO outputs
+
+# GPIO outputs
 PIN_MAIN = 7
 PIN_HEATER = 13
 PIN_PUMP = 15
@@ -35,6 +39,9 @@ PIN_PUMP_BUTTON = 5
 PIN_MAX_CS = 24
 PIN_MAX_CLOCK = 23
 PIN_MAX_DATA = 22
+
+######### MAIN CODE STARTS HERE #########
+TEMP_INTERVAL = 0.0
 # GPIO Groups
 PIN_OUTPUTS = {'main' : PIN_MAIN, 'heater' : PIN_HEATER, 'pump' : PIN_PUMP}
 PIN_INPUTS = (PIN_MAIN_BUTTON, PIN_PUMP_BUTTON)
