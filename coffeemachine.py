@@ -235,9 +235,14 @@ class CoffeeMachine(object):
 
 def main():
     """ main loop """
-    machine = CoffeeMachine()
-    while(True): # do a barrel roll!
-        machine.tick()
+    try:
+        machine = CoffeeMachine()
+        while(True): # do a barrel roll!
+            machine.tick()
+    except KeyboardInterrupt, SystemExit:
+        # make sure the GPIO cleanup and other processes are done right
+        del(machine)
+        sys.exit("Quitting cleanly")
 
 if __name__ == '__main__':
     main()
