@@ -1,3 +1,13 @@
+# Web interface
+
+## Graphing
+
+ * http://www.flotcharts.org could be handy
+
+# doing more than one thing at once
+
+https://docs.python.org/2/library/multiprocessing.html
+
 # Documentation for GPIO inputs
 
 * http://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
