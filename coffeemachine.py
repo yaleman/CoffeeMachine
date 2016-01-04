@@ -6,6 +6,7 @@ MAX_TIME_ON = 3600
 
 TEMP_UNITS = 'c'
 TEMP_SETPOINT = 92.0
+TEMP_EMERGENCY = 99.0
 
 ### HARDWARE SETTINGS ###
 DEBUG = True
@@ -207,6 +208,10 @@ class CoffeeMachine(object):
         # handle the possibility that the system is overloaded and just die
         if(time_since_last_tick > 0.5):
             sys.exit("Program running too slow, scary things might happen")
+
+        # handle possible heater overrun
+        if( self.temp > TEMP_EMERGENCY ):
+            self.setpin(False, PIN_HEATER)
 
         if(self.status['timeout'] == False):
             # check to see if the machine's been on too long
