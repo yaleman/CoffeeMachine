@@ -42,4 +42,4 @@ Basically
             GPIO
             |
             ---GND
-            
+Though this is WAY easier to sort by using BCM2 and BCM3 (Pins 3/5) which have pullup resistors. 

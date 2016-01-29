@@ -19,7 +19,7 @@ PIN_MAIN = 7
 PIN_HEATER = 13
 PIN_PUMP = 15
 # GPIO inputs
-PIN_MAIN_BUTTON = 3
+PIN_MAIN_BUTTON = 2 
 PIN_PUMP_BUTTON = 5
 # MAX31855 pins
 PIN_MAX_CS = 24
@@ -67,8 +67,8 @@ class CoffeeMachine(object):
         # keep a history of temperatures, for graphing and PID
         self.temp = 0
         self.temphistory = deque([])
-        # set the pin numbering to what's on the board and configure outputs
-        GPIO.setmode(GPIO.BOARD)
+        # set the pin numbering to what's on the chip and configure outputs
+        GPIO.setmode(GPIO.BCM)
         # configure the pins to be outputs
         debug("Setting up pins")
         for pin in PIN_OUTPUTS:
