@@ -43,3 +43,7 @@ Basically
             |
             ---GND
 Though this is WAY easier to sort by using BCM2 and BCM3 (Pins 3/5) which have pullup resistors. 
+
+# DS18B20 writeups
+
+http://www.reuk.co.uk/DS18B20-Temperature-Sensor-with-Raspberry-Pi.htm - neat one about command line usage options
