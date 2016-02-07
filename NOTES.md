@@ -47,3 +47,13 @@ Though this is WAY easier to sort by using BCM2 and BCM3 (Pins 3/5) which have p
 # DS18B20 writeups
 
 http://www.reuk.co.uk/DS18B20-Temperature-Sensor-with-Raspberry-Pi.htm - neat one about command line usage options
+
+
+# 31865 / SPI Notes
+
+* MISO/SDO are the same (Serial Data Output)
+* MOSI/DSI are the same (Serial Data Input)
+* CS/CSN - clear to send
+* DRDY = IRQ?
+* 24 = SPI0 = CS0
+* 26 = SPI1 = CS1
