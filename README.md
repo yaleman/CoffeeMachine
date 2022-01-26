@@ -1,3 +1,7 @@
+⚠️ THIS IS ARCHIVED AND WILL NOT BE UPDATED ⚠️
+
+To be honest, I never even ran it live. Weird.
+
 # CoffeeMachine
 
 A simple implementation of a state machine designed to run a coffee machine. :)
